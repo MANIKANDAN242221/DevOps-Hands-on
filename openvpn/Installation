@@ -1,0 +1,84 @@
+🚀 OpenVPN Installation Guide
+
+This guide walks you through the installation and configuration of OpenVPN Access Server on an AWS EC2 instance within a custom VPC.
+
+⚙️ Prerequisites
+
+AWS account with permissions to create VPC, subnets, EC2 instances, and security groups
+
+Basic knowledge of Linux commands and SSH
+
+OpenVPN official installation script
+
+🏗️ Step 1: Create a VPC
+
+Set up a VPC with the following configuration:
+
+VPC: 1
+
+Public Subnets: 2 🌐
+
+Private Subnets: 2 🔒
+
+Internet Gateway (IGW): 1
+
+NAT Gateway: 1
+
+Ensure your route tables are configured correctly so that public subnets can access the Internet via IGW and private subnets via NAT.
+
+💻 Step 2: Launch an EC2 Instance
+
+Launch a public EC2 instance in one of the public subnets.
+
+Assign a public IP to the instance for remote access 🌍.
+
+Connect to the instance via SSH 🔑.
+
+🛠️ Step 3: Install OpenVPN Access Server
+
+Run the following commands to update your instance and install OpenVPN Access Server:
+
+sudo apt update
+sudo bash -c 'bash <(curl -fsS https://packages.openvpn.net/as/install.sh) --yes'
+
+
+This installs OpenVPN Access Server from the official OpenVPN repository ✅.
+
+📄 Step 4: Verify Installation
+
+After installation, you should see output similar to:
+
++++++++++++++++++++++++++++++++++++++++++++++++
+Access Server 3.0.2 has been successfully installed in /usr/local/openvpn_as
+Configuration log file has been written to /usr/local/openvpn_as/init.log
+
+Access Server Web UIs are available here:
+Admin  UI: https://10.0.1.221:943/admin
+Client UI: https://10.0.1.221:943/
+To login please use the "openvpn" account with "GuVrPF8AqF8V" password.
+(password can be changed on Admin UI)
++++++++++++++++++++++++++++++++++++++++++++++++
+
+
+Use your EC2 public IP to access the OpenVPN Admin UI:
+https://<EC2-PUBLIC-IP>:943/admin 🌐
+
+🔧 Step 5: Configure OpenVPN Server
+
+Log in to the OpenVPN Admin UI.
+
+Update the VPN server configuration to replace the private IP with your public IP 🌍.
+
+🛣️ Step 6: Configure Routing
+
+Route your subnets through the VPN server with the following commands:
+
+sudo /usr/local/openvpn_as/scripts/sacli --key "vpn.server.routing.private_network.0" --value "10.0.0.0/16" ConfigPut
+sudo /usr/local/openvpn_as/scripts/sacli start
+sudo systemctl restart openvpnas
+
+🔑 Step 7: Connect to the VPN
+
+Install the OpenVPN client on your device.
+
+Use the client UI to download the configuration file and connect to your VPN server ✅.
